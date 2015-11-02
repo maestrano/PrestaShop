@@ -1,0 +1,135 @@
+# Include prestashop specific configuration
+- include_vars: "{{ item }}"
+  with_items:
+    - prestashop.yml
+    - version.yml
+  tags:
+    - configuration
+    - update
+
+- name: General | Install Application packages
+  apt: "name={{ item }} state=present"
+  with_items:
+    - git
+    - curl
+
+- name: PrestaShop | Ensure MySQL is running
+  command: service mysql start
+  ignore_errors: yes
+  tags:
+    - configuration
+
+- name: PrestaShop | Create PrestaShop database
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    db: "{{ prestashop_db_name }}"
+    state: present
+
+- name: PrestaShop | Create PrestaShop database user
+  mysql_user:
+    name: "{{ prestashop_db_user }}"
+    password: "{{ prestashop_db_password }}"
+    priv: "{{ prestashop_db_name }}.*:ALL,GRANT"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: PrestaShop | Download application from Github
+  sudo: false
+  git:
+    repo: "https://github.com/{{ application_repository }}/prestashop.git"
+    dest: "{{ prestashop_root_path }}"
+    version: "{{ application_version }}"
+    accept_hostkey: yes
+    ssh_opts: "-o StrictHostKeyChecking=no"
+    update: yes
+    force: yes
+  tags:
+    - update
+
+- name: PrestaShop | Current commit hash
+  shell: 'git log -n 1 --pretty=format:"%H" > {{ prestashop_root_path }}/.git-version'
+  args:
+    chdir: "{{ prestashop_root_path }}"
+  tags:
+    - update
+
+- name: Git | Ignore files permissions changes
+  command: "git config core.filemode false chdir={{ prestashop_root_path }}"
+  tags:
+    - update
+
+- name: Ansible | Update scripts
+  copy:
+    src: "{{ prestashop_root_path }}/deploy/ansible"
+    dest: /etc/
+  tags:
+    - update
+
+- name: PrestaShop | Configure Apache virtual host
+  template: 
+    src: etc-apache24-confd-prestashop-conf
+    dest: /etc/apache2/sites-available/prestashop.conf
+    owner: root
+    mode: 755
+  tags:
+    - configuration
+
+- name: PrestaShop | Enable Apache virtual host 
+  file: src=/etc/apache2/sites-available/prestashop.conf dest=/etc/apache2/sites-enabled/prestashop.conf state=link
+  tags:
+    - configuration
+
+- name: Apache | Restart the Apache service
+  service: 
+    name: apache2 
+    state: restarted
+
+- name: PrestaShop | Configuration file config.php
+  template: 
+    src: prestashop-config.inc.php
+    dest: "{{ prestashop_root_path }}/config.inc.php"
+    owner: root
+    mode: 755
+  tags:
+    - configuration
+
+- name: PrestaShop | Configuration file maestrano.json
+  template: 
+    src: prestashop-maestrano.json
+    dest: "{{ prestashop_root_path }}/maestrano.json"
+    owner: www-data
+    group: www-data
+    mode: 777
+  tags:
+    - configuration
+
+- name: PrestaShop | Setup Application
+  shell: "php {{ prestashop_root_path }}/install-dev/index_cli.php --domain={{ server_hostname }} --db_server=localhost --db_name={{ prestashop_db_name }} --db_user={{prestashop_db_user}} --db_password={{prestashop_db_password}}"
+  args:
+    chdir: "{{ prestashop_root_path }}"
+  tags:
+    - configuration
+
+- name: PrestaShop | Set file permissions
+  file:
+    path: "{{ prestashop_root_path }}"
+    mode: 0755
+    owner: www-data
+    group: www-data
+    state: directory
+    recurse: yes
+  tags:
+    - configuration
+
+- name: PrestaShop | Set log files permissions
+  file:
+    path: /var/log/apache2
+    mode: 0755
+    owner: www-data
+    group: www-data
+    state: directory
+    recurse: yes
+  tags:
+    - configuration
