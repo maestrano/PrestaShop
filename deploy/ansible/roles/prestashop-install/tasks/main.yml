@@ -86,15 +86,6 @@
     name: apache2 
     state: restarted
 
-- name: PrestaShop | Configuration file config.php
-  template: 
-    src: prestashop-config.inc.php
-    dest: "{{ prestashop_root_path }}/config.inc.php"
-    owner: root
-    mode: 755
-  tags:
-    - configuration
-
 - name: PrestaShop | Configuration file maestrano.json
   template: 
     src: prestashop-maestrano.json
