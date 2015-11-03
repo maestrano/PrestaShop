@@ -18,10 +18,10 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to http://www.prestashop.com for more information.
  *
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2007-2015 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  International Registered Trademark & Property of PrestaShop SA
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2015 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterface
@@ -899,7 +899,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 continue;
             }
 
-            if (is_array($this->update_fields) && empty($this->update_fields[$field])) {
+            if (is_array($this->update_fields) && empty($this->update_fields[$field]) && isset($this->def['fields'][$field]['shop']) && $this->def['fields'][$field]['shop']) {
                 continue;
             }
 
@@ -1094,18 +1094,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         $key = $class.'_'.md5($field);
         return ((is_array($_FIELDS) && array_key_exists($key, $_FIELDS)) ? ($htmlentities ? htmlentities($_FIELDS[$key], ENT_QUOTES, 'utf-8') : $_FIELDS[$key]) : $field);
-    }
-
-    /**
-     * @deprecated 1.5.0.1 Use validateController() instead
-     * @param bool $htmlentities
-     *
-     * @return array
-     */
-    public function validateControler($htmlentities = true)
-    {
-        Tools::displayAsDeprecated();
-        return $this->validateController($htmlentities);
     }
 
     /**

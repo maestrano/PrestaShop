@@ -17,11 +17,10 @@
 * versions in the future. If you wish to customize PrestaShop for your
 * needs please refer to http://www.prestashop.com for more information.
 *
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2015 PrestaShop SA
-
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
+* @author    PrestaShop SA <contact@prestashop.com>
+* @copyright 2007-2015 PrestaShop SA
+* @license   http://opensource.org/licenses/afl-3.0.php Academic Free License (AFL 3.0)
+* International Registered Trademark & Property of PrestaShop SA
 *}
 <section id="social_block" class="pull-right">
 	<ul>
@@ -55,7 +54,7 @@
         {/if}
         {if isset($google_plus_url) && $google_plus_url != ''}
         	<li class="google-plus">
-        		<a class="_blank" href="{$google_plus_url|escape:html:'UTF-8'}">
+        		<a class="_blank" href="{$google_plus_url|escape:html:'UTF-8'}" rel="publisher">
         			<span>{l s='Google Plus' mod='blocksocial'}</span>
         		</a>
         	</li>

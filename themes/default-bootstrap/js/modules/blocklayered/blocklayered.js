@@ -1,27 +1,27 @@
-/*
-* 2007-2015 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2015 PrestaShop SA
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registred Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2015 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2015 PrestaShop SA
+ * @license   http://opensource.org/licenses/afl-3.0.php Academic Free License (AFL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 var ajaxQueries = new Array();
 var ajaxLoaderOn = 0;
@@ -93,17 +93,12 @@ $(document).ready(function()
 	});
 
 	// Click on label
-	$('#layered_block_left label:not(.layered_color) a').on({
-		click: function(e) {
-			e.preventDefault();
-			var disable = $(this).parent().parent().find('input').attr('disabled');
-			if (disable == ''
-			|| typeof(disable) == 'undefined'
-			|| disable == false)
-			{
-				$(this).parent().parent().find('input').click();
-				reloadContent();
-			}
+	$(document).on('click', '#layered_block_left label:not(.layered_color) a', function(e) {
+		e.preventDefault();
+		var disable = $(this).parent().parent().find('input').attr('disabled');
+		if (disable == '' || typeof(disable) == 'undefined' || disable == false)
+		{
+			$(this).parent().parent().find('input').click();
 		}
 	});
 
@@ -119,17 +114,17 @@ $(document).ready(function()
 		hideFilterValueAction(this);
 	});
 
-	$('.selectProductSort').unbind('change').bind('change', function(event) {
+	$(document).off('change', '.selectProductSort').on('change', '.selectProductSort', function(e) {
 		$('.selectProductSort').val($(this).val());
 
 		if($('#layered_form').length > 0)
-			reloadContent(true);
+			reloadContent('forceSlide');
 	});
 
-	$(document).off('change', '#layered_form select[name=n]').on('change', '#layered_form select[name=n]', function(e)
+	$(document).off('change', 'select[name="n"]').on('change', 'select[name="n"]', function(e)
 	{
 		$('select[name=n]').val($(this).val());
-		reloadContent(true);
+		reloadContent('forceSlide');
 	});
 
 	paginationButton(false);
