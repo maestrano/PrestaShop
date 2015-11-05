@@ -1,23 +1,22 @@
 { 
-  "environment": "test",
+  "environment": "local",
   "app": {
-    "host": "http://ganga.impingesolutions.com/projects/web/Arnaud_Lachaume/Prestashop/Source/prestashop_162/"
+    "host": "http://prestashop.app.dev.maestrano.io"
   },
   "api": {
     "id": "app-2",
     "key": "przbnuxvogf6th879kl30wi5ycje2sad41mq2",    
-    "group_id": "cld-2"
+    "group_id": "prestashop.app.dev.maestrano.io-2"
   },
   "sso": {
     "enabled": true,
     "slo_enabled": true,
     "init_path": "module/maestranointegration/init",
-    "consume_path": "module/maestranointegration/consume",
+    "consume_path": "/module/maestranointegration/consume",
     "creation_mode": "virtual"
   },
   "connec": {
     "enabled": true,
-    "host": "http://api-sandbox.maestrano.io/connec",
     "base_path": "/api",
     "v2_path": "/v2",
     "reports_path": "/reports"

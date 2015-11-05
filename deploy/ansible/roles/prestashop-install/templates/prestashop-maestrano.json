@@ -13,8 +13,8 @@
         {% if hub_idp_url is defined %}"idp": "{{ hub_idp_url }}",{% endif %}
         "enabled": {{ sso_enabled }},
         "slo_enabled": true,
-        "init_path": "/maestrano/auth/saml/init.php",
-        "consume_path": "/maestrano/auth/saml/consume.php",
+        "init_path": "module/maestranointegration/init",
+        "consume_path": "/module/maestranointegration/consume",
         "creation_mode": "virtual"
     },
     "connec": {
@@ -28,8 +28,8 @@
             "groupUsersPath": "/maestrano/account/groups/:group_id/users/:id"
         },
         "connec": {
-            "initialization_path": "/maestrano/scripts/initialize.php",
-            "notifications_path": "/maestrano/data/subscribe.php",
+            "initialization_path": "module/maestranointegration/initialize",
+            "notifications_path": "module/maestranointegration/subscribe",
             "subscriptions": {
                 "company": true,
                 "accounts": true,
