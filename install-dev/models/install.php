@@ -639,6 +639,7 @@ class InstallModelInstall extends InstallAbstractModel
                 'gridhtml',
                 'homeslider',
                 'homefeatured',
+                'maestranointegration',
                 'productpaymentlogos',
                 'pagesnotfound',
                 'sekeywords',
