@@ -100,6 +100,23 @@
   shell: "php {{ prestashop_root_path }}/install-dev/index_cli.php --domain={{ server_hostname }} --db_server=localhost --db_name={{ prestashop_db_name }} --db_user={{ prestashop_db_user }} --db_password={{ prestashop_db_password }} --country=us --email=it@maestrano.com --send_email=0 --step=database,theme,modules,addons_modules"
   args:
     chdir: "{{ prestashop_root_path }}"
+
+- name: PrestaShop | Database configuration template maestrano-add-config-data.sql
+  template:
+    src: maestrano-add-config-data.sql
+    dest: "/tmp/maestrano-add-config-data.sql"
+    owner: www-data
+    group: www-data
+    mode: 755
+  tags:
+    - configuration
+
+- name: PrestaShop | Apply Database configuration
+  shell: "mysql {{ magento_db_name }} -u{{magento_db_user}} -p{{magento_db_password}} < {{ item }}"
+  args:
+    chdir: "/tmp"
+  with_items:
+    - maestrano-add-config-data.sql
   tags:
     - configuration
 
