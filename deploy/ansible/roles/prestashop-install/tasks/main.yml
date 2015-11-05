@@ -102,7 +102,7 @@
     - configuration
 
 - name: PrestaShop | Apply Database configuration
-  shell: "mysql {{ magento_db_name }} -u{{magento_db_user}} -p{{magento_db_password}} < {{ item }}"
+  shell: "mysql {{ prestashop_db_name }} -u{{prestashop_db_user}} -p{{prestashop_db_password}} < {{ item }}"
   args:
     chdir: "/tmp"
   with_items:
