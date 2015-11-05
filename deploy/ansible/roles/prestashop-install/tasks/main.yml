@@ -86,16 +86,6 @@
     name: apache2 
     state: restarted
 
-- name: PrestaShop | Configuration file maestrano.json
-  template: 
-    src: prestashop-maestrano.json
-    dest: "{{ prestashop_root_path }}/modules/maestranointegration/maestrano.json"
-    owner: www-data
-    group: www-data
-    mode: 777
-  tags:
-    - configuration
-
 - name: PrestaShop | Setup Application
   shell: "php {{ prestashop_root_path }}/install-dev/index_cli.php --domain={{ server_hostname }} --db_server=localhost --db_name={{ prestashop_db_name }} --db_user={{ prestashop_db_user }} --db_password={{ prestashop_db_password }} --country=us --email=it@maestrano.com --send_email=0 --step=database,theme,modules,addons_modules"
   args:
@@ -117,6 +107,16 @@
     chdir: "/tmp"
   with_items:
     - maestrano-add-config-data.sql
+  tags:
+    - configuration
+
+- name: PrestaShop | Configuration file maestrano.json
+  template: 
+    src: prestashop-maestrano.json
+    dest: "{{ prestashop_root_path }}modules/maestranointegration/maestrano.json"
+    owner: www-data
+    group: www-data
+    mode: 777
   tags:
     - configuration
 

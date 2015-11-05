@@ -1,0 +1,59 @@
+{ 
+  "environment": "test",
+  "app": {
+    "host": "http://ganga.impingesolutions.com/projects/web/Arnaud_Lachaume/Prestashop/Source/prestashop_162/"
+  },
+  "api": {
+    "id": "app-2",
+    "key": "przbnuxvogf6th879kl30wi5ycje2sad41mq2",    
+    "group_id": "cld-2"
+  },
+  "sso": {
+    "enabled": true,
+    "slo_enabled": true,
+    "init_path": "module/maestranointegration/init",
+    "consume_path": "module/maestranointegration/consume",
+    "creation_mode": "virtual"
+  },
+  "connec": {
+    "enabled": true,
+    "host": "http://api-sandbox.maestrano.io/connec",
+    "base_path": "/api",
+    "v2_path": "/v2",
+    "reports_path": "/reports"
+  },
+  "webhook": {
+    "account": {
+      "groupsPath": "/maestrano/account/groups/:id",
+      "groupUsersPath": "/maestrano/account/groups/:group_id/users/:id"
+    },
+    "connec": {
+      "initialization_path": "module/maestranointegration/initialize",
+      "notifications_path": "module/maestranointegration/subscribe",
+      
+      "subscriptions": {
+        "accounts": false,
+        "company": false,
+        "events": false,
+        "event_orders": false,
+        "invoices": true,
+        "items": true,
+        "journals": false,
+        "organizations": true,
+        "payments": true,
+        "pay_items": false,
+        "pay_schedules": false,
+        "pay_stubs": false,
+        "pay_runs": false,
+        "people": true,
+        "projects": false,
+        "tax_codes": false,
+        "tax_rates": false,
+        "time_activities": false,
+        "time_sheets": false,
+        "venues": false,
+        "work_locations": false
+      }
+    }
+  }
+}
