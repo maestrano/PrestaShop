@@ -4,7 +4,7 @@ class MnoIdMap {
 	
   public static function addMnoIdMap($local_id, $local_entity_name, $mno_id, $mno_entity_name) {
     global $adb;
-    $query = "INSERT INTO mno_id_map (mno_entity_guid, mno_entity_name, app_entity_id, app_entity_name, db_timestamp) VALUES ('".$mno_id."','".strtoupper($mno_entity_name)."','".$local_id."','".strtoupper($local_entity_name)."', LOCALTIMESTAMP(0))";
+    $query = "INSERT INTO mno_id_map (mno_entity_guid, mno_entity_name, app_entity_id, app_entity_name, db_timestamp) VALUES ('".$mno_id."','".strtoupper($mno_entity_name)."','".$local_id."','".strtoupper($local_entity_name)."', LOCALTIMESTAMP(0))";    
     $result = Db::getInstance()->execute($query);
     return $result;
   }

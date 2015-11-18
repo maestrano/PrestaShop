@@ -101,7 +101,7 @@ class MaestranoIntegration extends Module
 					
 				|| !$this->registerHook('actionOrderStatusPostUpdate')		
 				
-				|| !$this->registerHook('actionPaymentConfirmation')	
+				|| !$this->registerHook('actionPaymentCCAdd')	
 					
 				//|| !$this->registerHook('actionAdminLoginControllerSSO')		
 				|| !$this->registerHook('actionAdminLoginControllerSetMedia')		
@@ -248,13 +248,15 @@ class MaestranoIntegration extends Module
 	// Hook for the Invoice create after the order	
 	public function hookActionObjectOrderInvoiceAddAfter($params)
 	{		
+		//echo '<pre>'; print_R($params); echo '</pre>'; die();
 		$InvoiceMapper = new InvoiceMapper();  
-		$InvoiceMapper->processLocalUpdate($params, true, false);	
+		$InvoiceMapper->processLocalUpdate($params, true, false);			
 		
 	}	
-
-	public function hookActionPaymentConfirmation($params){		
-		echo '<pre>'; print_R($params); echo '</pre>'; die();
+	
+	// Hook for the Payment Confirmation
+	public function hookActionPaymentCCAdd($params){				
+		
 		$PaymentMapper = new PaymentMapper();  
 		$PaymentMapper->processLocalUpdate($params, true, false);	
 	}
