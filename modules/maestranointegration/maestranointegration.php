@@ -85,7 +85,8 @@ class MaestranoIntegration extends Module
 				
 				|| !$this->_createTabels() 
 				
-				|| !$this->registerHook('actionCustomerAccountAdd') 				
+				//|| !$this->registerHook('actionCustomerAccountAdd') 				
+				|| !$this->registerHook('actionObjectCustomerAddAfter') 				
 				|| !$this->registerHook('actionObjectCustomerUpdateAfter')	
 														
 				|| !$this->registerHook('actionObjectTaxUpdateAfter')		
@@ -94,7 +95,7 @@ class MaestranoIntegration extends Module
 					 
 				|| !$this->registerHook('actionObjectProductAddAfter')		
 				|| !$this->registerHook('actionObjectProductUpdateAfter')		
-				|| !$this->registerHook('actionObjectProductDeleteAfter')		
+				|| !$this->registerHook('actionObjectProductDeleteAfter')	
 				
 				|| !$this->registerHook('actionObjectOrderAddAfter')	
 				|| !$this->registerHook('actionObjectOrderInvoiceAddAfter')	
@@ -174,10 +175,11 @@ class MaestranoIntegration extends Module
 	}
 	
 	// Hook for the Add Customer at Maestrano	
-	public function hookActionCustomerAccountAdd($parames)
+	//public function hookActionCustomerAccountAdd($parames)
+	public function hookActionObjectCustomerAddAfter($parames)
 	{		
 		$CustomerMapper = new CustomerMapper();		
-		$CustomerMapper->processLocalUpdate($parames['newCustomer'] ,true, false);	
+		$CustomerMapper->processLocalUpdate($parames['object'] ,true, false);	
 	}
 	
 	// Hook for the Update Customer at Maestrano	
@@ -213,10 +215,12 @@ class MaestranoIntegration extends Module
 	{
 		
 		$ProductMapper = new ProductMapper();
+		
 		$ProductMapper->processLocalUpdate($params['object'], true, false);
 	}
 	
 	// Hook for the Update Product at Maestrano
+	
 	public function hookActionObjectProductUpdateAfter($params)
 	{		
 		$ProductMapper = new ProductMapper();
@@ -248,7 +252,6 @@ class MaestranoIntegration extends Module
 	// Hook for the Invoice create after the order	
 	public function hookActionObjectOrderInvoiceAddAfter($params)
 	{		
-		//echo '<pre>'; print_R($params); echo '</pre>'; die();
 		$InvoiceMapper = new InvoiceMapper();  
 		$InvoiceMapper->processLocalUpdate($params, true, false);			
 		

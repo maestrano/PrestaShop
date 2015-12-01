@@ -56,8 +56,11 @@ class InvoiceMapper extends BaseMapper {
         
         $invoice_hash['title'] = 'Prestashop invoice #' . $invObj->id_order . " (".$customerInfo['firstname']." ".$customerInfo['lastname'].")";
 		$invoice_hash['transaction_number'] = $invObj->id_order;
-		$invoice_hash['transaction_date'] = $cart->date_add;
-		$invoice_hash['due_date'] = $cart->date_add;
+					
+					
+					$transactionDate = date("Y-m-d",strtotime($cart->date_add));
+		$invoice_hash['transaction_date'] = $transactionDate;
+		$invoice_hash['due_date'] = $transactionDate;
 		
 		// Order Status Default set "SUBMITTED"
 		$invoice_hash['status'] = 'SUBMITTED';
