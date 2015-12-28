@@ -66,7 +66,9 @@ class ProductMapper extends BaseMapper {
 
 	// Map the Prestashop Product to a Connec resource hash
 	protected function mapModelToConnecResource($product) 
-	{
+	{ 		
+		
+		//echo '<pre>'; print_r($product); die();
 		$product_hash = array(); 
 				
 		//$product_hash['serial_number'] = $product->column_fields['serial_no'];
@@ -87,8 +89,8 @@ class ProductMapper extends BaseMapper {
         // Product Status
         $product_hash['status'] = ($product->active) ? "ACTIVE" : "INACTIVE";
         
-        // Inventory tracking
-		$qtyinstock = $this->format_string_to_decimal($product->quantity);
+        // Inventory tracking        
+		$qtyinstock = $this->format_string_to_decimal( ProductMapper::getProductQuantityById($product->id) );
     
 		$product_hash['quantity_on_hand'] = $qtyinstock;
 		
@@ -114,6 +116,17 @@ class ProductMapper extends BaseMapper {
 					$product_hash['sale_tax_code_id'] = $mno_id_map['mno_entity_guid']; 
 				}
 			}			
+		}		
+	}	
+	
+	// get Qty to product 
+	public static function getProductQuantityById($product) 
+	{ 
+		$sql = "SELECT quantity FROM "._DB_PREFIX_."stock_available WHERE id_product = '".$product."'";
+	
+		if ($row = Db::getInstance()->getRow($sql))
+		{			
+			return $row['quantity'];		
 		}		
 	}
 

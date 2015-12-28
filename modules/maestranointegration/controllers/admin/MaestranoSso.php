@@ -32,29 +32,29 @@ class MaestranoSso extends ModuleAdminController
 {
 	public function __construct() 
 	{
-		
-		if (Maestrano::sso()->isSsoEnabled()) 
+
+		if (Maestrano::sso()->isSsoEnabled()) 		
 		{			
 			if(!$this->isAdminLogged())
 			{
-				 //$samlController = array('init','consume')
-				 //Tools::getValue('controller');
-				 //if (!in_array(Tools::getValue('controller'), $samlController)) 
+				// Logout Action Triggered and redirected to the Maestrano logout URL
+				$logoutAction = Tools::safeOutput($_SERVER['QUERY_STRING']);
+				if(strpos($logoutAction, "logout") !== false){
+					Tools::redirect( Maestrano::sso()->getLogoutUrl() );					
+				}	
 				 
+				$adminDir = $this->cookieForAdminDirectory();
 				 
-				 $adminDir = $this->cookieForAdminDirectory();
-				 
-				 if($adminDir != "" AND strpos($adminDir, "admin") !== false)
-				 {
-					 				 
+				if($adminDir != "" AND strpos($adminDir, "admin") !== false)
+				{					 				 
 					// Write cookie for the Admin directory
 					$cookie = new Cookie('psAdDir');
 					$cookie->admin_directory = $adminDir;
 					$cookie->write(); 
 					
-					// Redirect to Masterano
+					// Redirect to Masterano for Login
 					Tools::redirect(Tools::getCurrentUrlProtocolPrefix().Tools::getShopDomain().__PS_BASE_URI__.Maestrano::sso()->getInitPath());
-				 }
+				}
 						
 			}
 		}

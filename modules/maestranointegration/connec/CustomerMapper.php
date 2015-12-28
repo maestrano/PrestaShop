@@ -65,8 +65,9 @@ class CustomerMapper extends BaseMapper {
 		// Save as Customer
 		$person_hash['is_customer'] = true;
 		
-		// Map attributes				
-		$person_hash['title'] = $person->id_gender;
+		// Map attributes		
+		if($person->id_gender=='1'){$gender = "Mr.";}else{$gender = "Mrs.";}		
+		$person_hash['title'] = $gender;
 		$person_hash['first_name'] = $person->firstname;
 		$person_hash['last_name']  = $person->lastname;
 		

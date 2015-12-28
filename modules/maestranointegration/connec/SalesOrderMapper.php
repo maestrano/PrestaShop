@@ -53,8 +53,10 @@ class SalesOrderMapper extends BaseMapper {
 		$order_hash['code'] = $order->reference;
 		$order_hash['title'] = 'Prestashop order #' . $order->id_cart . " (".$customerInfo['firstname']." ".$customerInfo['lastname'].")";
 		$order_hash['transaction_number'] = $order->id_cart;
-		$order_hash['transaction_date'] = $order->date_add;
-		$order_hash['due_date'] = $order->date_add;
+		
+					$transactionDate = date("Y-m-d",strtotime($order->date_add));
+		$order_hash['transaction_date'] = $transactionDate;
+		$order_hash['due_date'] = $transactionDate;
 		
 		// Order Status Default set "SUBMITTED"
 		$order_hash['status'] = 'SUBMITTED';
