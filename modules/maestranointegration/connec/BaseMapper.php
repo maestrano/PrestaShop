@@ -23,7 +23,7 @@ abstract class BaseMapper {
 
   public function __construct() {
     $this->_connec_client = new Maestrano_Connec_Client();
-    $this->_date_format = DateTime::ISO8601;
+    $this->_date_format = 'Y-m-d';
   }
 
   protected function is_set($variable) {
@@ -31,7 +31,7 @@ abstract class BaseMapper {
   }
 
   protected function is_new($entity) {
-    return ($entity->mode != 'edit');
+    return ((int)$entity->id == 0);
   }
 
   protected function format_date_to_php($connec_date) {
@@ -50,6 +50,10 @@ abstract class BaseMapper {
     return floatval($decimal_str);
   }
 
+  // Persist the entity
+  protected function persistLocalModel($entity, $resource_hash) {
+    $entity->save();
+  }
 
   // Overwrite me!
   // Return the Model local id
@@ -190,6 +194,9 @@ abstract class BaseMapper {
 
       // Save and map the Model id to the Connec resource id
       if($persist) {
+        error_log("persistLocalModel entity=$this->connec_entity_name");
+        $this->persistLocalModel($model, $resource_hash);
+
         $this->findOrCreateIdMap($resource_hash, $model);
       }
 
