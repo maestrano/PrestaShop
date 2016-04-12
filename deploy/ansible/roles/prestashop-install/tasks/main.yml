@@ -151,3 +151,8 @@
     recurse: yes
   tags:
     - configuration
+
+- name: PrestaShop | Initial data import
+  shell: "curl -v https://{{ server_hostname }}/module/maestranointegration/initialize"
+  tags:
+    - configuration

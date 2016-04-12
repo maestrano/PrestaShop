@@ -10,8 +10,7 @@ class ProductMapper extends BaseMapper {
 	protected $companyMapper = null;
 
 
-	public function __construct() 
-	{
+	public function __construct() {
 		parent::__construct();
 
 		$this->connec_entity_name = 'Product';
@@ -22,14 +21,12 @@ class ProductMapper extends BaseMapper {
 	}
 
 	// Return the Product local id
-	protected function getId($product) 
-	{
+	protected function getId($product) {
 		return $product->id;
 	}
 
 	// Return a local Product by id
-	protected function loadModelById($local_id) 
-	{
+	protected function loadModelById($local_id) {
 		return new Product($local_id, false, 1);
 	}
 
@@ -38,8 +35,7 @@ class ProductMapper extends BaseMapper {
 	}
 
 	// Map the Connec resource attributes onto the Prestashop Product
-	protected function mapConnecResourceToModel($product_hash, $product) 
-	{
+	protected function mapConnecResourceToModel($product_hash, $product) {
 		// Fields mapping
         if (array_key_exists('code', $product_hash)) { $product->reference = $product_hash['code']; }
         if (array_key_exists('name', $product_hash)) { $product->name = array(1 => $product_hash['name']); }
@@ -64,8 +60,7 @@ class ProductMapper extends BaseMapper {
 	}
 
 	// Map the Prestashop Product to a Connec resource hash
-	protected function mapModelToConnecResource($product) 
-	{ 		
+	protected function mapModelToConnecResource($product) { 		
 		$product_hash = array(); 
 
 		// Map attributes
@@ -84,7 +79,7 @@ class ProductMapper extends BaseMapper {
         $product_hash['status'] = ($product->active) ? "ACTIVE" : "INACTIVE";
         
         // Inventory tracking        
-		$qtyinstock = $this->format_string_to_decimal( ProductMapper::getProductQuantityById($product->id) );
+		$qtyinstock = $this->format_string_to_decimal(StockAvailable::getQuantityAvailableByProduct($product->id));
     
 		$product_hash['quantity_on_hand'] = $qtyinstock;
 		
@@ -96,8 +91,7 @@ class ProductMapper extends BaseMapper {
 	}
 	
 	// Add tax to product hash
-	public static function mapTaxToConnecResource($product, &$product_hash) 
-	{ 
+	public static function mapTaxToConnecResource($product, &$product_hash) { 
 		$sql = "SELECT * FROM "._DB_PREFIX_."tax_rule WHERE id_tax_rules_group = '".pSQL($product->id_tax_rules_group)."'";
 	
 		if ($row = Db::getInstance()->getRow($sql))
@@ -112,16 +106,4 @@ class ProductMapper extends BaseMapper {
 			}			
 		}		
 	}	
-	
-	// get Qty to product 
-	public static function getProductQuantityById($product) 
-	{ 
-		$sql = "SELECT quantity FROM "._DB_PREFIX_."stock_available WHERE id_product = '".$product."'";
-	
-		if ($row = Db::getInstance()->getRow($sql))
-		{			
-			return $row['quantity'];
-		}		
-	}
-
 }
