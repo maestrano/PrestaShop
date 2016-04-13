@@ -10,7 +10,7 @@ class CustomerMapper extends BaseMapper {
     parent::__construct();
 
     $this->connec_entity_name      = 'Customer';
-    $this->local_entity_name       = 'Customer';
+    $this->local_entity_name       = 'Customers';
     $this->connec_resource_name    = 'people';
     $this->connec_resource_endpoint = 'people';
   }

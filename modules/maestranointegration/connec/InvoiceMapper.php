@@ -5,8 +5,7 @@
 */
 
 class InvoiceMapper extends BaseMapper {
-	
-	
+
 	public function __construct() 
 	{
 		parent::__construct();
@@ -52,13 +51,11 @@ class InvoiceMapper extends BaseMapper {
         $customerInfo = $this->loadCustomerByID($invoice['cart']->id_customer);
         
         $orderMnoIdMap = MnoIdMap::findMnoIdMapByLocalIdAndEntityName($invObj->id_order, 'SALESORDERS');
-        
-        
+
         $invoice_hash['title'] = 'Prestashop invoice #' . $invObj->id_order . " (".$customerInfo['firstname']." ".$customerInfo['lastname'].")";
 		$invoice_hash['transaction_number'] = $invObj->id_order;
-					
-					
-					$transactionDate = date("Y-m-d",strtotime($cart->date_add));
+
+		$transactionDate = date("Y-m-d",strtotime($cart->date_add));
 		$invoice_hash['transaction_date'] = $transactionDate;
 		$invoice_hash['due_date'] = $transactionDate;
 		
@@ -70,8 +67,7 @@ class InvoiceMapper extends BaseMapper {
 		$invoice_hash['sales_order_id'] = $orderMnoIdMap['mno_entity_guid'];
 		
 		// Total Amount of cart
-		$invoice_hash['amount'] = $invObj->total_paid_tax_incl;
-		
+		$invoice_hash['amount'] = array("total_amount" => $invObj->total_paid_tax_incl, "net_amount" => $invObj->total_paid_tax_excl);		
 		
 		// Shipping and Billing Address
         $billingAddress = $this->getAddress($cart->id_address_invoice);
@@ -137,9 +133,7 @@ class InvoiceMapper extends BaseMapper {
 				$line_number++;
 			}	
 		}
-        
-        
-        
+
         // Add Shipping if applicable
 		if ($invObj->total_shipping_tax_incl > 0){
 			$line_hash = array();

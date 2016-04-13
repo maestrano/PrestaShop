@@ -6,7 +6,6 @@
 
 class SalesOrderMapper extends BaseMapper {
 
-
 	public function __construct() 
 	{
 		parent::__construct();
@@ -54,7 +53,7 @@ class SalesOrderMapper extends BaseMapper {
 		$order_hash['title'] = 'Prestashop order #' . $order->id_cart . " (".$customerInfo['firstname']." ".$customerInfo['lastname'].")";
 		$order_hash['transaction_number'] = $order->id_cart;
 		
-					$transactionDate = date("Y-m-d",strtotime($order->date_add));
+		$transactionDate = date("Y-m-d",strtotime($order->date_add));
 		$order_hash['transaction_date'] = $transactionDate;
 		$order_hash['due_date'] = $transactionDate;
 		
@@ -65,7 +64,7 @@ class SalesOrderMapper extends BaseMapper {
         $order_hash['person_id'] = $customerMnoIdMap['mno_entity_guid'];
 
 		// Total Amount of cart
-		$order_hash['amount'] = $order->total_paid;
+		$order_hash['amount'] = array("total_amount" => $order->total_paid_tax_incl, "net_amount" => $order->total_paid_tax_excl);
 		
 		// Shipping and Billing Address
         $billingAddress = $this->getAddress($order->id_address_invoice);
@@ -184,10 +183,4 @@ class SalesOrderMapper extends BaseMapper {
 			}			
 		}		
 	}
-	
-	
-
-	
-	
-
 }

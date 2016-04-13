@@ -14,7 +14,7 @@ class ProductMapper extends BaseMapper {
 		parent::__construct();
 
 		$this->connec_entity_name = 'Product';
-		$this->local_entity_name = 'Product';
+		$this->local_entity_name = 'Products';
 		$this->connec_resource_name = 'items';
 		$this->connec_resource_endpoint = 'items';
 
