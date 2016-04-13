@@ -90,8 +90,6 @@
   shell: "php {{ prestashop_root_path }}/install-dev/index_cli.php --domain={{ server_hostname }} --db_server=localhost --db_name={{ prestashop_db_name }} --db_user={{ prestashop_db_user }} --db_password={{ prestashop_db_password }} --country=us --email=it@maestrano.com --send_email=0 --step=database,theme,modules,addons_modules"
   args:
     chdir: "{{ prestashop_root_path }}"
-  tags:
-    - configuration
 
 - name: PrestaShop | Configure Apache .htaccess
   template:
