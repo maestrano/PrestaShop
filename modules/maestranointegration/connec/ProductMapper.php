@@ -30,8 +30,9 @@ class ProductMapper extends BaseMapper {
 		return new Product($local_id, false, 1);
 	}
 
+	// Return a new Product instance
 	protected function matchLocalModel($resource_hash) {
-		$product = new Product(null, false, 1);
+		return new Product(null, false, 1);
 	}
 
 	// Map the Connec resource attributes onto the Prestashop Product

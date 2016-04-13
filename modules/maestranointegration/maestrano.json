@@ -4,7 +4,7 @@
         "host": "http://prestashop.app.dev.maestrano.io"
     },
     "api": {
-        "id": "f04f4c0c1b43bdc893699e0f63812aa1f99b7811b47878a22e5081eff0133f1e",
+                "id": "f04f4c0c1b43bdc893699e0f63812aa1f99b7811b47878a22e5081eff0133f1e",
         "key": "c1fb4e69-bb67-48b4-a1a6-c23734b348cc",
         "group_id": "prestashop.app.dev.maestrano.io"
     },
