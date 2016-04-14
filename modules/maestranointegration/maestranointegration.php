@@ -28,11 +28,17 @@ require_once (dirname(__FILE__) . '/init.php');
 
 if (!defined('_PS_VERSION_'))
 	exit;
-	
-	
-	
+
 class MaestranoIntegration extends Module
 {
+	public static $hook_names = array(
+		'actionObjectCustomerAddAfter', 'actionObjectCustomerUpdateAfter',
+		'actionObjectTaxUpdateAfter', 'actionObjectTaxAddAfter', 'actionObjectTaxDeleteAfter',
+		'actionObjectProductAddAfter', 'actionObjectProductUpdateAfter', 'actionObjectProductDeleteAfter',
+		'actionObjectOrderAddAfter', 'actionObjectOrderInvoiceAddAfter', 'actionOrderStatusPostUpdate',
+		'actionPaymentCCAdd', 'actionAdminLoginControllerSetMedia'
+	);
+
 	protected static $cache_products;
 	
 	public $maestranoClass  = "Maestrano";
@@ -41,9 +47,6 @@ class MaestranoIntegration extends Module
 	
 	public function __construct()
 	{			
-		
-		
-		
 		$this->name = 'maestranointegration';
 		$this->tab = 'administration11';
 		$this->version = '1.6.4';
@@ -52,11 +55,7 @@ class MaestranoIntegration extends Module
 		$this->bootstrap = true;
 		
 		// Check the Maestrano class exit othewise throws error
-		if (class_exists($this->maestranoClass)) 
-		{		 
-			//$mn = new MaestranoSso();		
-		}
-		else{
+		if (!class_exists($this->maestranoClass)) {
 			$this->warning = $this->l($this->maestranoClass." Class doesn't Exist.");			
 		}
 		
@@ -80,35 +79,15 @@ class MaestranoIntegration extends Module
 	 
 	public function install()
 	{
-		if (
-				!parent::install() 
-				
-				|| !$this->_createTabels() 
-				
-				//|| !$this->registerHook('actionCustomerAccountAdd') 				
-				|| !$this->registerHook('actionObjectCustomerAddAfter') 				
-				|| !$this->registerHook('actionObjectCustomerUpdateAfter')	
-														
-				|| !$this->registerHook('actionObjectTaxUpdateAfter')		
-				|| !$this->registerHook('actionObjectTaxAddAfter')		 
-				|| !$this->registerHook('actionObjectTaxDeleteAfter')	
-					 
-				|| !$this->registerHook('actionObjectProductAddAfter')		
-				|| !$this->registerHook('actionObjectProductUpdateAfter')		
-				|| !$this->registerHook('actionObjectProductDeleteAfter')	
-				
-				|| !$this->registerHook('actionObjectOrderAddAfter')	
-				|| !$this->registerHook('actionObjectOrderInvoiceAddAfter')	
-					
-				|| !$this->registerHook('actionOrderStatusPostUpdate')		
-				
-				|| !$this->registerHook('actionPaymentCCAdd')	
-					
-				//|| !$this->registerHook('actionAdminLoginControllerSSO')		
-				|| !$this->registerHook('actionAdminLoginControllerSetMedia')		
-		)
-			return false;
+		// Install modules
+		parent::install();
 		
+		// Create mno_id_map table
+		$this->_createTables();
+
+		// Register hooks
+		foreach (MaestranoIntegration::$hook_names as $hook_name) { $this->registerHook($hook_name); }
+
 		return true;
 	}	
 	
@@ -117,7 +96,7 @@ class MaestranoIntegration extends Module
 	 *
 	 * @return flag as true, false
 	*/
-	public function _createTabels()
+	public function _createTables()
 	{
 		$sql = "CREATE TABLE IF NOT EXISTS `mno_id_map` (
 			`mno_entity_guid` varchar(255) NOT NULL,
@@ -175,11 +154,11 @@ class MaestranoIntegration extends Module
 	}
 	
 	// Hook for the Add Customer at Maestrano	
-	//public function hookActionCustomerAccountAdd($parames)
-	public function hookActionObjectCustomerAddAfter($parames)
+	//public function hookActionCustomerAccountAdd($params)
+	public function hookActionObjectCustomerAddAfter($params)
 	{		
 		$CustomerMapper = new CustomerMapper();		
-		$CustomerMapper->processLocalUpdate($parames['object'] ,true, false);	
+		$CustomerMapper->processLocalUpdate($params['object'] ,true, false);	
 	}
 	
 	// Hook for the Update Customer at Maestrano	
@@ -213,16 +192,14 @@ class MaestranoIntegration extends Module
 	// Hook for the Add Product at Maestrano
 	public function hookActionObjectProductAddAfter($params)
 	{
-		
 		$ProductMapper = new ProductMapper();
-		
 		$ProductMapper->processLocalUpdate($params['object'], true, false);
 	}
 	
 	// Hook for the Update Product at Maestrano
 	
 	public function hookActionObjectProductUpdateAfter($params)
-	{		
+	{
 		$ProductMapper = new ProductMapper();
 		$ProductMapper->processLocalUpdate($params['object'], true, false);
 	}
