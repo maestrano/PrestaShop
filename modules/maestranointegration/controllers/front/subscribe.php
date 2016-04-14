@@ -36,8 +36,7 @@ class MaestranointegrationSubscribeModuleFrontController extends ModuleFrontCont
 	public function initContent()
 	{
 		parent::initContent();
-		
-		
+
 		try {
 			if(!Maestrano::param('connec.enabled')) { return false; }
 			
@@ -46,14 +45,7 @@ class MaestranointegrationSubscribeModuleFrontController extends ModuleFrontCont
 			$notification = json_decode(file_get_contents('php://input'), false);
 			$entity_name = strtoupper(trim($notification->entity));
 			$entity_id = $notification->id;		
-			
 			switch ($entity_name) {
-				
-				case "PERSONS":
-					$customerMapper = new CustomerMapper();
-					$customerMapper->fetchConnecResource($entity_id);					
-				break;
-				
 				case "ITEMS":
 					$productMapper = new ProductMapper();
 					$productMapper->fetchConnecResource($entity_id);
@@ -63,14 +55,11 @@ class MaestranointegrationSubscribeModuleFrontController extends ModuleFrontCont
 					$taxMapper = new TaxMapper();
 					$taxMapper->fetchConnecResource($entity_id);
 				break;
-		  				
-			}	
+			}
 		}
 		catch (Exception $e) 
 		{
 			error_log("Caught exception in subscribe " . json_encode($e->getMessage()));
 		}
-				 
 	}
-
 }
