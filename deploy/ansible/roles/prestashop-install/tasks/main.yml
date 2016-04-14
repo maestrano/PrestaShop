@@ -151,6 +151,6 @@
     - configuration
 
 - name: PrestaShop | Initial data import
-  shell: "curl -v {% if maestrano_environment == 'local' %}http{% else %}https{% endif %}://{{ server_hostname }}/module/maestranointegration/initialize"
+  shell: "curl -v --resolve '{{ server_hostname }}:80:127.0.0.1' https://{{ server_hostname }}/module/maestranointegration/initialize"
   tags:
     - configuration
