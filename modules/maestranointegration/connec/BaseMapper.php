@@ -134,7 +134,6 @@ abstract class BaseMapper {
 
   // Fetch and persist a Connec! resounce by id
   public function fetchConnecResource($entity_id) {
-	  die($entity_id);
     error_log("fetch connec resource entity_name=$this->connec_entity_name, entity_id=$entity_id");
 
     $msg = $this->_connec_client->get("$this->connec_resource_endpoint/$entity_id");
