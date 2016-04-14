@@ -64,6 +64,27 @@ class CustomerMapper extends BaseMapper {
       $person_hash['birth_date'] = $this->format_date_to_connec($person->birthday);
     }
 
+    // Address
+    $address = $person->getAddresses(1);
+    if($address != null && !empty($address)) {
+      $address_hash = array();
+      $address_hash['billing'] = array("line1" => $address[0]['address1'],
+                                        "line2" => $address[0]['address2'],
+                                        "postal_code" => $address[0]['postcode'],
+                                        "city" => $address[0]['city'],
+                                        "state" => $address[0]['state'],
+                                        "country" => $address[0]['country']);
+      if(count($address) > 1) {
+        $address_hash['shipping'] = array("line1" => $address[1]['address1'],
+                                        "line2" => $address[1]['address2'],
+                                        "postal_code" => $address[1]['postcode'],
+                                        "city" => $address[1]['city'],
+                                        "state" => $address[1]['state'],
+                                        "country" => $address[1]['country']);
+      }
+      $person_hash['address'] = $address_hash;
+    }
+
     return $person_hash;
   }
 }

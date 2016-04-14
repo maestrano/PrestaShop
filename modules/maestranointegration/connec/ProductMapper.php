@@ -5,10 +5,7 @@
 */
 
 class ProductMapper extends BaseMapper {
-
-
 	protected $companyMapper = null;
-
 
 	public function __construct() {
 		parent::__construct();
@@ -17,7 +14,6 @@ class ProductMapper extends BaseMapper {
 		$this->local_entity_name = 'Products';
 		$this->connec_resource_name = 'items';
 		$this->connec_resource_endpoint = 'items';
-
 	}
 
 	// Return the Product local id
@@ -88,7 +84,6 @@ class ProductMapper extends BaseMapper {
 		ProductMapper::mapTaxToConnecResource($product, $product_hash);
 		
 		return $product_hash;        
-		
 	}
 	
 	// Add tax to product hash
