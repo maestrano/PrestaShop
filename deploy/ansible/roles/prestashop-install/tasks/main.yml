@@ -16,7 +16,7 @@
 - name: PrestaShop | Check installation directory
   stat: path={{ prestashop_root_path }}
   register: installation_directory
-- set_fact: installation={{ p.stat.isdir is not defined or not p.stat.isdir }}
+- set_fact: installation={{ installation_directory.stat.isdir is not defined or not installation_directory.stat.isdir }}
 
 - name: PrestaShop | Ensure MySQL is running
   command: service mysql start
