@@ -13,6 +13,11 @@
     - git
     - curl
 
+- name: PrestaShop | Check installation directory
+  stat: path={{ prestashop_root_path }}
+  register: installation_directory
+- set_fact: installation={{ p.stat.isdir is not defined or not p.stat.isdir }}
+
 - name: PrestaShop | Ensure MySQL is running
   command: service mysql start
   ignore_errors: yes
@@ -101,11 +106,14 @@
   tags:
     - configuration
 
-- name: PrestaShop | Database configuration template maestrano-add-config-data.sql
+- name: PrestaShop | Database configuration templates
   template:
-    src: maestrano-add-config-data.sql
-    dest: "/tmp/maestrano-add-config-data.sql"
+    src: "{{ item }}"
+    dest: "/tmp/{{ item }}"
     mode: 0755
+  with_items:
+    - maestrano-add-config-data.sql
+    - maestrano-disable-ssl.sql
   tags:
     - configuration
 
@@ -150,7 +158,22 @@
   tags:
     - configuration
 
+- name: PrestaShop | Disable SSL for data import
+  shell: "mysql {{ prestashop_db_name }} -u{{prestashop_db_user}} -p{{prestashop_db_password}} < maestrano-disable-ssl.sql"
+  args:
+    chdir: "/tmp"
+  tags:
+    - configuration
+
 - name: PrestaShop | Initial data import
-  shell: "curl -v --resolve '{{ server_hostname }}:80:127.0.0.1' {% if maestrano_environment == 'local' %}http{% else %}https{% endif %}://{{ server_hostname }}/module/maestranointegration/initialize"
+  shell: "curl -v --resolve '{{ server_hostname }}:80:127.0.0.1' http://{{ server_hostname }}/module/maestranointegration/initialize"
+  when: not installation
+  tags:
+    - configuration
+
+- name: PrestaShop | Apply Database configuration
+  shell: "mysql {{ prestashop_db_name }} -u{{prestashop_db_user}} -p{{prestashop_db_password}} < maestrano-add-config-data.sql"
+  args:
+    chdir: "/tmp"
   tags:
     - configuration

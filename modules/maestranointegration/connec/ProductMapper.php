@@ -64,7 +64,7 @@ class ProductMapper extends BaseMapper {
 		}
 
 		// Set quantity
-		StockAvailableCore::setQuantity($this->getId($product), 0, $product_hash['quantity_available']);
+		if (array_key_exists('quantity_available', $product_hash)) { StockAvailableCore::setQuantity($this->getId($product), 0, $product_hash['quantity_available']); }
 	}
 
 	// Map the Prestashop Product to a Connec resource hash
