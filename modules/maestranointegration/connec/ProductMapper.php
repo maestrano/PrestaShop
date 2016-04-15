@@ -33,6 +33,16 @@ class ProductMapper extends BaseMapper {
 
 	// Map the Connec resource attributes onto the Prestashop Product
 	protected function mapConnecResourceToModel($product_hash, $product) {
+		// Default rewrite link
+		if(!$this->is_set($product->link_rewrite)) { $product->link_rewrite = array(1 => $product_hash['id']); }
+
+		// Default category
+		if(!$this->is_set($product->category)) {
+			$default_category = $product->getDefaultCategory();
+			$product->category = Category::getLinkRewrite($default_category['id_category_default'], 1);
+			$product->addToCategories($default_category['id_category_default']);
+		}
+
 		// Fields mapping
         if (array_key_exists('code', $product_hash)) { $product->reference = $product_hash['code']; }
         if (array_key_exists('name', $product_hash)) { $product->name = array(1 => $product_hash['name']); }
@@ -53,7 +63,8 @@ class ProductMapper extends BaseMapper {
         	else if($product_hash['status'] == 'INACTIVE') { $product->active = false; }
 		}
 
-		if(!$this->is_set($product->link_rewrite)) { $product->link_rewrite = array(1 => $product_hash['id']); }
+		// Set quantity
+		StockAvailableCore::setQuantity($this->getId($product), 0, $product_hash['quantity_available']);
 	}
 
 	// Map the Prestashop Product to a Connec resource hash
