@@ -13,6 +13,15 @@
     - git
     - curl
 
+- name: PrestaShop | Check installation directory
+  stat: path={{ prestashop_root_path }}
+  register: installation_directory
+  tags:
+    - configuration
+- set_fact: installation={{ installation_directory.stat.isdir is not defined or not installation_directory.stat.isdir }}
+  tags:
+    - configuration
+
 - name: PrestaShop | Ensure MySQL is running
   command: service mysql start
   ignore_errors: yes
@@ -90,8 +99,6 @@
   shell: "php {{ prestashop_root_path }}/install-dev/index_cli.php --domain={{ server_hostname }} --db_server=localhost --db_name={{ prestashop_db_name }} --db_user={{ prestashop_db_user }} --db_password={{ prestashop_db_password }} --country=us --email=it@maestrano.com --send_email=0 --step=database,theme,modules,addons_modules"
   args:
     chdir: "{{ prestashop_root_path }}"
-  tags:
-    - configuration
 
 - name: PrestaShop | Configure Apache .htaccess
   template:
@@ -103,11 +110,14 @@
   tags:
     - configuration
 
-- name: PrestaShop | Database configuration template maestrano-add-config-data.sql
+- name: PrestaShop | Database configuration templates
   template:
-    src: maestrano-add-config-data.sql
-    dest: "/tmp/maestrano-add-config-data.sql"
+    src: "{{ item }}"
+    dest: "/tmp/{{ item }}"
     mode: 0755
+  with_items:
+    - maestrano-add-config-data.sql
+    - maestrano-disable-ssl.sql
   tags:
     - configuration
 
@@ -149,5 +159,25 @@
     group: www-data
     state: directory
     recurse: yes
+  tags:
+    - configuration
+
+- name: PrestaShop | Disable SSL for data import
+  shell: "mysql {{ prestashop_db_name }} -u{{prestashop_db_user}} -p{{prestashop_db_password}} < maestrano-disable-ssl.sql"
+  args:
+    chdir: "/tmp"
+  tags:
+    - configuration
+
+- name: PrestaShop | Initial data import
+  shell: "curl -v --resolve '{{ server_hostname }}:80:127.0.0.1' http://{{ server_hostname }}/module/maestranointegration/initialize"
+  when: not installation
+  tags:
+    - configuration
+
+- name: PrestaShop | Apply Database configuration
+  shell: "mysql {{ prestashop_db_name }} -u{{prestashop_db_user}} -p{{prestashop_db_password}} < maestrano-add-config-data.sql"
+  args:
+    chdir: "/tmp"
   tags:
     - configuration

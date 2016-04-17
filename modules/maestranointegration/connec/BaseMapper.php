@@ -23,7 +23,7 @@ abstract class BaseMapper {
 
   public function __construct() {
     $this->_connec_client = new Maestrano_Connec_Client();
-    $this->_date_format = DateTime::ISO8601;
+    $this->_date_format = 'Y-m-d';
   }
 
   protected function is_set($variable) {
@@ -31,7 +31,7 @@ abstract class BaseMapper {
   }
 
   protected function is_new($entity) {
-    return ($entity->mode != 'edit');
+    return ((int)$entity->id == 0);
   }
 
   protected function format_date_to_php($connec_date) {
@@ -50,6 +50,19 @@ abstract class BaseMapper {
     return floatval($decimal_str);
   }
 
+  // Persist the entity
+  protected function persistLocalModel($entity, $resource_hash) {
+    // Disable hooks to avoid pushing back the entity to Connec!
+    $module = ModuleCore::getInstanceByName('maestranointegration');
+    foreach (MaestranoIntegration::$hook_names as $hook_name) { $module->unregisterHook($hook_name); }
+    Cache::clean('hook_idsbyname');
+    Cache::clean('hook_module_exec_list__1_');
+
+    $entity->save();
+
+    // Enable hooks
+    foreach (MaestranoIntegration::$hook_names as $hook_name) { $module->registerHook($hook_name); }
+  }
 
   // Overwrite me!
   // Return the Model local id
@@ -130,7 +143,6 @@ abstract class BaseMapper {
 
   // Fetch and persist a Connec! resounce by id
   public function fetchConnecResource($entity_id) {
-	  die($entity_id);
     error_log("fetch connec resource entity_name=$this->connec_entity_name, entity_id=$entity_id");
 
     $msg = $this->_connec_client->get("$this->connec_resource_endpoint/$entity_id");
@@ -190,6 +202,9 @@ abstract class BaseMapper {
 
       // Save and map the Model id to the Connec resource id
       if($persist) {
+        error_log("persistLocalModel entity=$this->connec_entity_name");
+        $this->persistLocalModel($model, $resource_hash);
+
         $this->findOrCreateIdMap($resource_hash, $model);
       }
 
@@ -228,7 +243,6 @@ abstract class BaseMapper {
   // $pushToConnec: option to notify Connec! of the model update
   // $delete:       option to soft delete the local entity mapping amd ignore further Connec! updates
   public function processLocalUpdate($model, $pushToConnec=true, $delete=false, $saveResult=false) {
-
     $pushToConnec = $pushToConnec && Maestrano::param('connec.enabled');
 
     error_log("process local update entity=$this->connec_entity_name, local_id=" . $this->getId($model) . ", pushToConnec=$pushToConnec, delete=$delete");

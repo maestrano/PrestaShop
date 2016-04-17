@@ -5,80 +5,77 @@
 */
 
 class ProductMapper extends BaseMapper {
-
-
 	protected $companyMapper = null;
 
-
-	public function __construct() 
-	{
+	public function __construct() {
 		parent::__construct();
 
 		$this->connec_entity_name = 'Product';
 		$this->local_entity_name = 'Products';
 		$this->connec_resource_name = 'items';
 		$this->connec_resource_endpoint = 'items';
-
 	}
 
 	// Return the Product local id
-	protected function getId($product) 
-	{
+	protected function getId($product) {
 		return $product->id;
 	}
 
 	// Return a local Product by id
-	protected function loadModelById($local_id) 
-	{
+	protected function loadModelById($local_id) {
+		return new Product($local_id, false, 1);
+	}
 
+	// Return a new Product instance
+	protected function matchLocalModel($resource_hash) {
+		return new Product(null, false, 1);
 	}
 
 	// Map the Connec resource attributes onto the Prestashop Product
-	protected function mapConnecResourceToModel($product_hash, $product) 
-	{
-		// Fiels mapping
-		$product->setTypeId('simple');
-        if (array_key_exists('code', $product_hash)) { $product->setSku($product_hash['code']); }
-        if (array_key_exists('name', $product_hash)) { $product->setName($product_hash['name']); }
-        if (array_key_exists('description', $product_hash)) { $product->setDescription($product_hash['description']); }
+	protected function mapConnecResourceToModel($product_hash, $product) {
+		// Default rewrite link
+		if(!$this->is_set($product->link_rewrite)) { $product->link_rewrite = array(1 => $product_hash['id']); }
+
+		// Default category
+		if(!$this->is_set($product->category)) {
+			$default_category = $product->getDefaultCategory();
+			$product->category = Category::getLinkRewrite($default_category['id_category_default'], 1);
+			$product->addToCategories($default_category['id_category_default']);
+		}
+
+		// Fields mapping
+        if (array_key_exists('code', $product_hash)) { $product->reference = $product_hash['code']; }
+        if (array_key_exists('name', $product_hash)) { $product->name = array(1 => $product_hash['name']); }
+        if (array_key_exists('description', $product_hash)) { $product->description = array(1 => $product_hash['description']); }
         
         // Set Price
         if (array_key_exists('sale_price', $product_hash)) {
-            if (array_key_exists('net_amount', $product_hash['sale_price'])) {
-                $product->setPrice($product_hash['sale_price']['net_amount']);
-            }
+            if (array_key_exists('net_amount', $product_hash['sale_price'])) { $product->price = $product_hash['sale_price']['net_amount']; }
         }
         
         // Set Weight
-        if (array_key_exists('weight', $product_hash)) {
-            $product->setWeight($product_hash['weight']);
-        } 
-        else {
-            $product->setWeight(0);
-        }        
+        if (array_key_exists('weight', $product_hash)) { $product->weight = $product_hash['weight']; } 
+        else { $product->weight = 0; }        
         
         // Set Status
         if (array_key_exists('status', $product_hash)) {
-			$product->setStatus($product_hash['status']);
+        	if($product_hash['status'] == 'ACTIVE') { $product->active = true; }
+        	else if($product_hash['status'] == 'INACTIVE') { $product->active = false; }
 		}
-        
+
+		// Set quantity
+		if (array_key_exists('quantity_available', $product_hash)) { StockAvailableCore::setQuantity($this->getId($product), 0, $product_hash['quantity_available']); }
 	}
 
 	// Map the Prestashop Product to a Connec resource hash
-	protected function mapModelToConnecResource($product) 
-	{ 		
-		
-		//echo '<pre>'; print_r($product); die();
+	protected function mapModelToConnecResource($product) { 		
 		$product_hash = array(); 
-				
-		//$product_hash['serial_number'] = $product->column_fields['serial_no'];
-		//$product_hash['part_number'] = $product->column_fields['productcode'];
-		
+
 		// Map attributes
 		$product_hash['code'] = $product->reference;
-        $product_hash['name'] = $product->name[1];
-        $product_hash['description'] = $product->description[1];        
-        $product_hash['sale_price'] =  array('net_amount' => $this->format_string_to_decimal($product->price));
+        $product_hash['name'] = (is_array($product->name) ? $product->name[1] : $product->name);
+        $product_hash['description'] = (is_array($product->description) ? $product->description[1] : $product->description);
+        $product_hash['sale_price'] =  array('net_amount' => $this->format_string_to_decimal($product->price), 'tax_rate' => $product->tax_rate);
         
         // Default product type to PURCHASED on creation
         if($this->is_new($product)) { $product_hash['type'] = 'PURCHASED'; }
@@ -90,7 +87,7 @@ class ProductMapper extends BaseMapper {
         $product_hash['status'] = ($product->active) ? "ACTIVE" : "INACTIVE";
         
         // Inventory tracking        
-		$qtyinstock = $this->format_string_to_decimal( ProductMapper::getProductQuantityById($product->id) );
+		$qtyinstock = $this->format_string_to_decimal(StockAvailable::getQuantityAvailableByProduct($product->id));
     
 		$product_hash['quantity_on_hand'] = $qtyinstock;
 		
@@ -98,12 +95,10 @@ class ProductMapper extends BaseMapper {
 		ProductMapper::mapTaxToConnecResource($product, $product_hash);
 		
 		return $product_hash;        
-		
 	}
 	
 	// Add tax to product hash
-	public static function mapTaxToConnecResource($product, &$product_hash) 
-	{ 
+	public static function mapTaxToConnecResource($product, &$product_hash) { 
 		$sql = "SELECT * FROM "._DB_PREFIX_."tax_rule WHERE id_tax_rules_group = '".pSQL($product->id_tax_rules_group)."'";
 	
 		if ($row = Db::getInstance()->getRow($sql))
@@ -118,16 +113,4 @@ class ProductMapper extends BaseMapper {
 			}			
 		}		
 	}	
-	
-	// get Qty to product 
-	public static function getProductQuantityById($product) 
-	{ 
-		$sql = "SELECT quantity FROM "._DB_PREFIX_."stock_available WHERE id_product = '".$product."'";
-	
-		if ($row = Db::getInstance()->getRow($sql))
-		{			
-			return $row['quantity'];		
-		}		
-	}
-
 }

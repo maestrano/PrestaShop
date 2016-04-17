@@ -24,35 +24,22 @@ class CustomerMapper extends BaseMapper {
   // Return a local Customer by id
   protected function loadModelById($local_id) 
   {      
-    $person         =  new StdClass;
-    $person->firstname =  new StdClass;
-    $person->lastname  =  new StdClass;
-    $person->email     =  new StdClass;
-    $person->id        =  new StdClass;
-    $person->mode      =  new StdClass;
-    
-    $sql = "SELECT * FROM "._DB_PREFIX_."customer WHERE id_customer = '".pSQL($local_id)."'";
-    if ($row = Db::getInstance()->getRow($sql))
-    {      
-      $person->firstname =  $row['firstname'];
-      $person->lastname  =  $row['lastname'];
-      $person->email     =  $row['email'];
-      $person->id        =  $local_id;
-      $person->mode      =  'edit';
-      return $person;
-    }
+    return new Customer($local_id);
   }
   
   protected function mapConnecResourceToModel($person_hash, $person)
   {
     // Map hash attributes to Person
-    if($this->is_set($person_hash['code'])) { $person->column_fields['contact_no'] = $person_hash['code']; }
-    if($this->is_set($person_hash['title'])) { $person->column_fields['salutation'] = $person_hash['title']; }
-    if($this->is_set($person_hash['first_name'])) { $person->column_fields['firstname'] = $person_hash['first_name']; }
-    if($this->is_set($person_hash['last_name'])) { $person->column_fields['lastname'] = $person_hash['last_name']; }
-    if($this->is_set($person_hash['description'])) { $person->column_fields['description'] = $person_hash['description']; }
-    if($this->is_set($person_hash['job_title'])) { $person->column_fields['title'] = $person_hash['job_title']; }
-    if($this->is_set($person_hash['birth_date'])) { $person->column_fields['birthday'] = $this->format_date_to_php($person_hash['birth_date']); }
+    if(array_key_exists('title', $person_hash)) {
+      if($person_hash['title'] == 'MRS') { $person->id_gender = 2; } else { $person->id_gender = 1; }
+    }
+    if(array_key_exists('first_name', $person_hash)) { $person->firstname = $person_hash['first_name']; }
+    if(array_key_exists('last_name', $person_hash)) { $person->lastname = $person_hash['last_name']; }
+    if(array_key_exists('email', $person_hash) && array_key_exists('address', $person_hash['email'])) { $person->email = $person_hash['email']['address']; }
+    if(array_key_exists('birth_date', $person_hash)) { $person->birthday = $this->format_date_to_php($person_hash['birth_date']); }
+    else { $person->birthday = '1970-01-01'; }
+
+    if(!$this->is_set($person->passwd)) { $person->setWsPasswd(uniqid()); }
   }
   
   // Map the Prestashop Customer to a Connec resource hash
@@ -75,6 +62,27 @@ class CustomerMapper extends BaseMapper {
 
     if($this->is_set($person->birthday)) {
       $person_hash['birth_date'] = $this->format_date_to_connec($person->birthday);
+    }
+
+    // Address
+    $address = $person->getAddresses(1);
+    if($address != null && !empty($address)) {
+      $address_hash = array();
+      $address_hash['billing'] = array("line1" => $address[0]['address1'],
+                                        "line2" => $address[0]['address2'],
+                                        "postal_code" => $address[0]['postcode'],
+                                        "city" => $address[0]['city'],
+                                        "state" => $address[0]['state'],
+                                        "country" => $address[0]['country']);
+      if(count($address) > 1) {
+        $address_hash['shipping'] = array("line1" => $address[1]['address1'],
+                                        "line2" => $address[1]['address2'],
+                                        "postal_code" => $address[1]['postcode'],
+                                        "city" => $address[1]['city'],
+                                        "state" => $address[1]['state'],
+                                        "country" => $address[1]['country']);
+      }
+      $person_hash['address'] = $address_hash;
     }
 
     return $person_hash;

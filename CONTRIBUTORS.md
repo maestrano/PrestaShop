@@ -56,6 +56,7 @@ GitHub contributors:
 - Chen.Zhidong
 - Chris
 - Chris Gurk
+- christianverardi
 - ChristopheBoucaut
 - CINS
 - cippest
@@ -78,6 +79,7 @@ GitHub contributors:
 - Daniele Giachino
 - danoosh
 - Danoosh Mir
+- daresh
 - David Eschmeyer
 - David Gasperoni
 - David Sivocha
@@ -170,6 +172,7 @@ GitHub contributors:
 - Jerome Nadaud
 - jeromenadaud
 - jessylenne
+- Jérôme Nadaud
 - Joan
 - Joan Juvanteny
 - joce
@@ -203,6 +206,7 @@ GitHub contributors:
 - ldecoker
 - Lesley Paone
 - LOIC ROSSET ltd
+- lozal2244
 - luc
 - Luc Vandesype
 - Luca T.
@@ -239,6 +243,7 @@ GitHub contributors:
 - Michael Hjulskov
 - Michel Courtade
 - Mickael Desgranges
+- Mickael Andrieu
 - Mikael Blotin
 - Mikko Hellsing
 - Milow
@@ -299,6 +304,7 @@ GitHub contributors:
 - Quetzacoalt91
 - Racochejl
 - Rafael Cunha
+- Raphael Droz
 - Raphael Malie
 - raulgundin
 - rGaillard
@@ -308,6 +314,7 @@ GitHub contributors:
 - robert
 - Roland Schütz
 - romainberger
+- Roy
 - runningz
 - Remi Gaillard
 - s-duval

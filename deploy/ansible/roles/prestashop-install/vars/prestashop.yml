@@ -7,7 +7,7 @@ prestashop_root_path: /var/lib/prestashop/webapp/
 # PrestaShop default configuration
 sso_enabled: "false"
 connec_enabled: "false"
-maestrano_environment: "production"
-server_hostname: "server_hostname"
+maestrano_environment: "local"
+server_hostname: "localhost"
 api_key: "api_key"
 api_secret: "api_secret"
