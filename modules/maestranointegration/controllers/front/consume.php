@@ -76,7 +76,7 @@ class MaestranointegrationConsumeModuleFrontController extends ModuleFrontContro
 					{						
 						$cookie = new Cookie('psAdDir');	
 												
-						Tools::redirect(Tools::getCurrentUrlProtocolPrefix().Tools::getShopDomain().__PS_BASE_URI__.$cookie->admin_directory); 	
+						Tools::redirect($cookie->admin_directory);
 					}
 				}			
 			}
