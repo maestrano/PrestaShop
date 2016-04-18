@@ -29,7 +29,6 @@
  */
 class MaestranointegrationConsumeModuleFrontController extends ModuleFrontController
 {
-	
 	/**
 	 * @see FrontController::initContent()
 	 */
@@ -75,7 +74,6 @@ class MaestranointegrationConsumeModuleFrontController extends ModuleFrontContro
 					if ($cookie->id_employee)
 					{						
 						$cookie = new Cookie('psAdDir');	
-												
 						Tools::redirect($cookie->admin_directory);
 					}
 				}			
@@ -90,8 +88,5 @@ class MaestranointegrationConsumeModuleFrontController extends ModuleFrontContro
 		{         
             echo $ex; exit;
         }	
-				
 	}
-	
-
 }

@@ -32,7 +32,6 @@ class MaestranoSso extends ModuleAdminController
 {
 	public function __construct() 
 	{
-
 		if (Maestrano::sso()->isSsoEnabled()) 		
 		{			
 			if(!$this->isAdminLogged())
@@ -55,7 +54,6 @@ class MaestranoSso extends ModuleAdminController
 					// Redirect to Masterano for Login
 					Tools::redirect(Tools::getCurrentUrlProtocolPrefix().Tools::getShopDomain().__PS_BASE_URI__.Maestrano::sso()->getInitPath());
 				}
-						
 			}
 		}
 	}		
@@ -101,5 +99,4 @@ class MaestranoSso extends ModuleAdminController
 		
 		return $pageURL;
 	}
-	
 }

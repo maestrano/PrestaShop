@@ -169,11 +169,19 @@
   tags:
     - configuration
 
+- name: Apache | Restart the Apache service
+  service: 
+    name: apache2 
+    state: restarted
+  tags:
+    - configuration
+
 - name: PrestaShop | Initial data import
   shell: "curl -v --resolve '{{ server_hostname }}:80:127.0.0.1' http://{{ server_hostname }}/module/maestranointegration/initialize"
   when: not installation
   tags:
     - configuration
+  ignore_errors: true
 
 - name: PrestaShop | Apply Database configuration
   shell: "mysql {{ prestashop_db_name }} -u{{prestashop_db_user}} -p{{prestashop_db_password}} < maestrano-add-config-data.sql"
