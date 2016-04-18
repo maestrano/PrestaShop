@@ -29,7 +29,6 @@
  */
 class MaestranointegrationInitModuleFrontController extends ModuleFrontController
 {
-	
 	/**
 	 * @see FrontController::initContent()
 	 */
@@ -40,9 +39,7 @@ class MaestranointegrationInitModuleFrontController extends ModuleFrontControlle
 		// Create a Saml request and redirect to the server
 		$req = new Maestrano_Saml_Request($_GET);
 		
-		//Redirect to the Maestrano for user selection
+		// Redirect to the Maestrano for user selection
 		Tools::redirect($req->getRedirectUrl());
-		 
 	}
-
 }
